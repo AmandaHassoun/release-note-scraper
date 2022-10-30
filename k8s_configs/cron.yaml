@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: release-note-scraper
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: release-note-scraper
+            image: amandahassoun/release-note-scraper:v1.0
+            imagePullPolicy: IfNotPresent
+            command:
+            - /usr/local/bin/python3.11
+            - /opt/bin/release-note-scraper.py
+            - https://raw.githubusercontent.com/hashicorp/terraform-provider-google/main/CHANGELOG.md
+          restartPolicy: OnFailure
