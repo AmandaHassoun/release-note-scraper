@@ -1,0 +1,24 @@
+version: 2.1
+
+orbs:
+  docker: circleci/docker@2.1.4
+
+jobs:
+  build-and-push:
+    executor: docker/docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check
+      - docker/build:
+          image: amandahassoun/release-note-scraper:v1.0
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: amandahassoun/release-note-scraper:v1.0
+      - run:
+          command: |
+            echo "Digest is: $(</tmp/digest.txt)"
+workflows:
+  commit:
+    jobs:
+      - build-and-push
