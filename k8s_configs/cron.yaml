@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: release-note-scraper
 spec:
-  schedule: "* * * * *"
+  schedule: "0 9 * * *"
   jobTemplate:
     spec:
       template:
@@ -11,7 +11,7 @@ spec:
           containers:
           - name: release-note-scraper
             image: amandahassoun/release-note-scraper:v1.0
-            imagePullPolicy: IfNotPresent
+            imagePullPolicy: Always
             command:
             - /usr/local/bin/python3.11
             - /opt/bin/release-note-scraper.py

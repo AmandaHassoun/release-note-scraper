@@ -37,7 +37,6 @@ def parse_version_details(version_details_raw: str) -> (str, str):
     version_raw = version_details_raw.strip().split()
     rel_date_raw = version_details_raw.strip().split("(")
     rel_version = version_raw[1]
-    print(rel_date_raw)
     rel_date_ = rel_date_raw[1].strip(")")
 
     # Removing the comma so we can convert this string date into a datetime object
@@ -60,6 +59,7 @@ if __name__ == '__main__':
         f.close()
 
     releases_file = open("release-notes.txt", "r")
+    found_breaking_changes = False
     count = 0
     versions = []
     dates = {}
@@ -75,10 +75,13 @@ if __name__ == '__main__':
                 versions.append(version)
                 if release_date_raw != "Unreleased":
                     release_date = parser.parse(release_date_raw)
-                    date_today = datetime.today()
-                    if date_today <= release_date:
-                        latest_release_details[0] = version
-                        latest_release_details[1] = release_date
+                    # date_today = datetime.today()
+                    # Hard-coding a specific date for demo purposes
+                    date_today = datetime(2022, 4, 4)
+                    if date_today == release_date:
+                        latest_release_details.append(version)
+                        latest_release_details.append(release_date)
+                        found_breaking_changes = True
                 dates[version] = release_date_raw
                 count += 1
 
@@ -90,8 +93,20 @@ if __name__ == '__main__':
             bc_dict[versions[count - 1]] = breaking_changes
 
         if not line:
+            if found_breaking_changes:
+                version = latest_release_details[0]
+                date = latest_release_details[1]
+                message = "```" + version + " - " + str(date) + "\n"
+                if len(bc_dict[version]) == 1:
+                    message += bc_dict[version][0]
+                else:
+                    for bullet in bc_dict[version]:
+                        message += bullet + "\n"
+                message += "```"
+                post_message_slack(message)
+            else:
+                print("No new TF provider releases with breaking changes today!")
             print(json.dumps(bc_dict, sort_keys=True, indent=4))
-            print(dates)
             break
 
     releases_file.close()
