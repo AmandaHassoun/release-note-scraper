@@ -7,7 +7,8 @@ workflows:
   build-and-publish-docker-image:
     jobs:
       - docker/publish:
-          image: PARAM_REGISTRY/release-note-scraper:v1.0
-          docker-password: PARAM_DOCKER_PASSWORD
-          docker-username: PARAM_DOCKER_USERNAME
-          registry: PARAM_REGISTRY
+          image: $PARAM_REGISTRY/release-note-scraper:v1.0
+          docker-password: $PARAM_DOCKER_PASSWORD
+          docker-username: $PARAM_DOCKER_USERNAME
+          registry: $PARAM_REGISTRY
+          context: release-note-scraper

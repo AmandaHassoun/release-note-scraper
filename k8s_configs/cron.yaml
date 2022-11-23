@@ -12,6 +12,21 @@ spec:
           - name: release-note-scraper
             image: amandahassoun/release-note-scraper:v1.0
             imagePullPolicy: Always
+            # kubectl create secret generic slack-secrets --from-literal=channel-id=<insert channel_id> \
+            # --from-literal=bot-token=<insert token>
+            env:
+              - name: SLACK_CHANNEL_ID
+                valueFrom:
+                  secretKeyRef:
+                    name: slack-secrets
+                    key: channel-id
+                    optional: false
+              - name: SLACK_BOT_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: slack-secrets
+                    key: bot-token
+                    optional: false
             command:
             - /usr/local/bin/python3.11
             - /opt/bin/release-note-scraper.py
